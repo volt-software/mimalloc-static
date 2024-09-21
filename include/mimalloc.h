@@ -20,8 +20,10 @@ terms of the MIT license. A copy of the license can be found in the file
   #else
     #define mi_attr_noexcept   throw()
   #endif
+#define mi_attr_extern_inline
 #else
   #define mi_attr_noexcept
+  #define mi_attr_extern_inline extern inline
 #endif
 
 #if defined(__cplusplus) && (__cplusplus >= 201703)
@@ -332,7 +334,7 @@ typedef enum mi_option_e {
   mi_option_deprecated_segment_cache,
   mi_option_deprecated_page_reset,
   mi_option_abandoned_page_purge,       // immediately purge delayed purges on thread termination
-  mi_option_deprecated_segment_reset, 
+  mi_option_deprecated_segment_reset,
   mi_option_eager_commit_delay,         // the first N segments per thread are not eagerly committed (but per page in the segment on demand)
   mi_option_purge_delay,                // memory purging is delayed by N milli seconds; use 0 for immediate purging or -1 for no purging at all. (=10)
   mi_option_use_numa_nodes,             // 0 = use all available numa nodes, otherwise use at most N nodes.

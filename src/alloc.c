@@ -28,7 +28,7 @@ terms of the MIT license. A copy of the license can be found in the file
 // Fast allocation in a page: just pop from the free list.
 // Fall back to generic allocation only if the list is empty.
 // Note: in release mode the (inlined) routine is about 7 instructions with a single test.
-extern inline void* _mi_page_malloc_zero(mi_heap_t* heap, mi_page_t* page, size_t size, bool zero) mi_attr_noexcept 
+mi_attr_extern_inline void* _mi_page_malloc_zero(mi_heap_t* heap, mi_page_t* page, size_t size, bool zero) mi_attr_noexcept
 {
   mi_assert_internal(page->block_size == 0 /* empty heap */ || mi_page_block_size(page) >= size);
   mi_block_t* const block = page->free;
@@ -125,7 +125,7 @@ static inline mi_decl_restrict void* mi_heap_malloc_small_zero(mi_heap_t* heap, 
   #endif
 
   mi_page_t* page = _mi_heap_get_free_small_page(heap, size + MI_PADDING_SIZE);
-  void* const p = _mi_page_malloc_zero(heap, page, size + MI_PADDING_SIZE, zero);  
+  void* const p = _mi_page_malloc_zero(heap, page, size + MI_PADDING_SIZE, zero);
   mi_track_malloc(p,size,zero);
 
   #if MI_STAT>1
@@ -143,16 +143,16 @@ static inline mi_decl_restrict void* mi_heap_malloc_small_zero(mi_heap_t* heap, 
 }
 
 // allocate a small block
-mi_decl_nodiscard extern inline mi_decl_restrict void* mi_heap_malloc_small(mi_heap_t* heap, size_t size) mi_attr_noexcept {
+mi_decl_nodiscard mi_attr_extern_inline mi_decl_restrict void* mi_heap_malloc_small(mi_heap_t* heap, size_t size) mi_attr_noexcept {
   return mi_heap_malloc_small_zero(heap, size, false);
 }
 
-mi_decl_nodiscard extern inline mi_decl_restrict void* mi_malloc_small(size_t size) mi_attr_noexcept {
+mi_decl_nodiscard mi_attr_extern_inline mi_decl_restrict void* mi_malloc_small(size_t size) mi_attr_noexcept {
   return mi_heap_malloc_small(mi_prim_get_default_heap(), size);
 }
 
 // The main allocation function
-extern inline void* _mi_heap_malloc_zero_ex(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment) mi_attr_noexcept {
+mi_attr_extern_inline void* _mi_heap_malloc_zero_ex(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment) mi_attr_noexcept {
   if mi_likely(size <= MI_SMALL_SIZE_MAX) {
     mi_assert_internal(huge_alignment == 0);
     return mi_heap_malloc_small_zero(heap, size, zero);
@@ -177,15 +177,15 @@ extern inline void* _mi_heap_malloc_zero_ex(mi_heap_t* heap, size_t size, bool z
   }
 }
 
-extern inline void* _mi_heap_malloc_zero(mi_heap_t* heap, size_t size, bool zero) mi_attr_noexcept {
+mi_attr_extern_inline void* _mi_heap_malloc_zero(mi_heap_t* heap, size_t size, bool zero) mi_attr_noexcept {
   return _mi_heap_malloc_zero_ex(heap, size, zero, 0);
 }
 
-mi_decl_nodiscard extern inline mi_decl_restrict void* mi_heap_malloc(mi_heap_t* heap, size_t size) mi_attr_noexcept {
+mi_decl_nodiscard mi_attr_extern_inline mi_decl_restrict void* mi_heap_malloc(mi_heap_t* heap, size_t size) mi_attr_noexcept {
   return _mi_heap_malloc_zero(heap, size, false);
 }
 
-mi_decl_nodiscard extern inline mi_decl_restrict void* mi_malloc(size_t size) mi_attr_noexcept {
+mi_decl_nodiscard mi_attr_extern_inline mi_decl_restrict void* mi_malloc(size_t size) mi_attr_noexcept {
   return mi_heap_malloc(mi_prim_get_default_heap(), size);
 }
 
@@ -194,7 +194,7 @@ mi_decl_nodiscard mi_decl_restrict void* mi_zalloc_small(size_t size) mi_attr_no
   return mi_heap_malloc_small_zero(mi_prim_get_default_heap(), size, true);
 }
 
-mi_decl_nodiscard extern inline mi_decl_restrict void* mi_heap_zalloc(mi_heap_t* heap, size_t size) mi_attr_noexcept {
+mi_decl_nodiscard mi_attr_extern_inline mi_decl_restrict void* mi_heap_zalloc(mi_heap_t* heap, size_t size) mi_attr_noexcept {
   return _mi_heap_malloc_zero(heap, size, true);
 }
 
@@ -203,7 +203,7 @@ mi_decl_nodiscard mi_decl_restrict void* mi_zalloc(size_t size) mi_attr_noexcept
 }
 
 
-mi_decl_nodiscard extern inline mi_decl_restrict void* mi_heap_calloc(mi_heap_t* heap, size_t count, size_t size) mi_attr_noexcept {
+mi_decl_nodiscard mi_attr_extern_inline mi_decl_restrict void* mi_heap_calloc(mi_heap_t* heap, size_t count, size_t size) mi_attr_noexcept {
   size_t total;
   if (mi_count_size_overflow(count,size,&total)) return NULL;
   return mi_heap_zalloc(heap,total);
